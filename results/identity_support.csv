@@ -1,0 +1,5 @@
+subset,base_pair_by_split_rows,prediction_rows,unique_pair_ids,unique_unordered_identity_pairs,unique_endpoint_identities,unique_comparison_pair_keys,unique_pois,min_train_primary_pair_rows,max_train_primary_pair_rows,test_rows_with_directed_pair_in_training,test_rows_with_unordered_pair_in_training,test_rows_with_any_endpoint_identity_in_training,test_rows_with_both_assay_ids_known
+all_oof,4370,52440,874,804,328,838,17,569,836,332,332,599,2985
+no_unordered_identity_pair_in_training,4038,48456,810,772,308,774,14,569,836,0,0,267,2805
+both_endpoint_identities_absent_from_training,3771,45252,775,737,290,739,13,569,836,0,0,0,2546
+both_assay_ids_known,2985,35820,597,563,195,581,7,569,836,180,180,439,2985

@@ -1,0 +1,7 @@
+estimand,metric,contrast_direction,point_estimate,lower_bound,upper_bound,B,target_count,bonferroni_family_size,two_sided_alpha,significant_better_positive,status
+pair_id,direction_accuracy,candidate_minus_reference,0.032265446224256311,-0.021792113569074338,0.069212248479490063,50000,17,6,0.050000000000000003,false,ESTIMABLE
+pair_id,delta_mae,reference_minus_candidate,0.13988297549150844,-0.011074500567470615,0.39036435596497748,50000,17,6,0.050000000000000003,false,ESTIMABLE
+pair_id,delta_rmse,reference_minus_candidate,0.040420295983004971,-0.12780786269322778,0.23012933773017621,50000,17,6,0.050000000000000003,false,ESTIMABLE
+equal_comparison_key,direction_accuracy,candidate_minus_reference,0.025218774860779652,-0.023115138883478117,0.069997511967750087,50000,17,6,0.050000000000000003,false,ESTIMABLE
+equal_comparison_key,delta_mae,reference_minus_candidate,0.1370446977386616,-0.013353989282125953,0.39653804614989219,50000,17,6,0.050000000000000003,false,ESTIMABLE
+equal_comparison_key,delta_rmse,reference_minus_candidate,0.038658720468471928,-0.12864465664332211,0.23841647247763637,50000,17,6,0.050000000000000003,false,ESTIMABLE

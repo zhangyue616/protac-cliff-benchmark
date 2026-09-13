@@ -1,0 +1,56 @@
+{
+  "scope": "POST_HOC_DESCRIPTIVE_REPRESENTATION_AUDIT_ONLY",
+  "support": {
+    "selected_reference_tanimoto_one_primary_pair_rows": 16,
+    "selected_unique_endpoint_records": 25,
+    "selected_unique_unordered_identity_pairs": 13
+  },
+  "reference_binary_parameters": {
+    "api_legacy": "AllChem.GetMorganFingerprintAsBitVect",
+    "api_generator": "rdFingerprintGenerator.GetMorganGenerator(...).GetFingerprint",
+    "radius": 2,
+    "fp_size": 2048,
+    "include_chirality": false,
+    "count_simulation": false,
+    "include_redundant_environments": false
+  },
+  "nonchiral_sparse_count_parameters": {
+    "api": "rdFingerprintGenerator.GetMorganGenerator(...).GetSparseCountFingerprint",
+    "radius": 2,
+    "include_chirality": false,
+    "feature_set_definition": "support (keys) of the sparse count vector",
+    "folding": "feature IDs retained rather than reduced modulo 2048"
+  },
+  "chirality_aware_sparse_count_parameters": {
+    "api": "rdFingerprintGenerator.GetMorganGenerator(...).GetSparseCountFingerprint",
+    "radius": 2,
+    "include_chirality": true,
+    "folding": "feature IDs retained rather than reduced modulo 2048"
+  },
+  "representation_results": {
+    "reference_binary_equal_pairs": 16,
+    "nonchiral_sparse_set_distinguishable_pairs": 6,
+    "nonchiral_sparse_count_distinguishable_pairs": 14,
+    "chiral_sparse_count_distinguishable_pairs": 16,
+    "folding_supported_pairs": 6,
+    "multiplicity_loss_supported_pairs": 8,
+    "chirality_aware_only_separation_pairs": 2,
+    "chirality_additional_pairs": 2,
+    "unresolved_at_tested_representations_pairs": 0
+  },
+  "unique_identity_pair_results": {
+    "groups": 13,
+    "folding_supported_groups": 6,
+    "multiplicity_loss_supported_groups": 6,
+    "chirality_aware_only_separation_groups": 1,
+    "nonchiral_sparse_count_distinguishable_groups": 12,
+    "chiral_sparse_count_distinguishable_groups": 13,
+    "unresolved_at_tested_representations_groups": 0
+  },
+  "interpretation_boundaries": [
+    "Sparse Morgan feature IDs are hashed and are not guaranteed collision-free.",
+    "Representational separability does not imply improved prediction.",
+    "Chirality-aware separation does not assign the activity difference to chirality.",
+    "The audit does not establish mechanism, transferability, causal SAR, or a named substructure effect."
+  ]
+}
