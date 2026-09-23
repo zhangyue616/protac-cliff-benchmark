@@ -2,7 +2,7 @@
 
 This repository provides data-reconstruction, fixed-recipe model-fitting, and result-recomputation code for a retrospective comparison of signed pDC50 differences within **874 measured PROTAC activity-cliff pairs from 420 records**. It includes author-generated predictions and resampling plans, aggregate results, and manuscript figures. Molecular structures and measured activities are obtained from the fixed public source using the supplied download script.
 
-The six-contrast family was fixed after early findings from the same data; its multiplicity-adjusted percentile intervals have uncalibrated coverage. The [reproduction coverage](docs/reproduction.md) distinguishes the runnable TACK-based analyses from historical source diagnostics that still need additional materials.
+The six-contrast family was fixed after early findings from the same data; its multiplicity-adjusted percentile intervals have uncalibrated coverage. The [reproduction coverage](docs/reproduction.md) distinguishes the unified TACK-based analyses from the separate PROTAC-DB source-overlap audit, which requires a reader-obtained workbook and runs locally.
 
 The task begins after both endpoint activities are known and a pair meets the operational cliff definition. It evaluates local signed-difference resolution; it does not evaluate prospective cliff discovery, compound ranking, target-held-out deployment, or mechanism prediction.
 
@@ -33,6 +33,8 @@ Full-precision values, support counts, and interpretation notes are in [results]
 | --- | --- |
 | [scripts/reproduce.py](scripts/reproduce.py) | Reconstructs the fixed data and runs the declared analyses, using cached predictions or refitting the 575 models. |
 | [scripts/fetch_source.py](scripts/fetch_source.py) | Downloads and verifies the fixed public TACK source. |
+| [scripts/prepare_protacdb.py](scripts/prepare_protacdb.py) | Verifies a reader-downloaded PROTAC-DB workbook and converts the matching study version locally. |
+| [scripts/audit_source_overlap.py](scripts/audit_source_overlap.py) | Reconstructs the fixed PROTAC-DB overlap exclusion and rescores predictions locally. |
 | [reproduction](reproduction/) | Author predictions without source activities or structures, and saved resampling plans. |
 | [scripts/run_synthetic_demo.py](scripts/run_synthetic_demo.py) | Deterministic offline toy workflow for checking local dependencies and shared aggregation code. |
 | [scripts/recompute_primary_component_metrics.py](scripts/recompute_primary_component_metrics.py) | Rescores frozen primary predictions with the saved 2,000 × 77 component plan. |
@@ -61,7 +63,7 @@ To rerun the original 200 primary fits and the 375 supplemental fits before scor
 python scripts/reproduce.py --mode refit --output-dir ../protac-reproduction-refit
 ~~~
 
-Use a new output directory for each run. An existing fixed TACK download can be supplied with `--source-file <parquet>`. These commands do not reconstruct the historical PROTAC-DB nonself anchors or unpreserved upstream provenance. Exact coverage and output locations are in the [reproduction guide](docs/reproduction.md).
+Use a new output directory for each run. An existing fixed TACK download can be supplied with `--source-file <parquet>`. These unified commands do not run the PROTAC-DB source-overlap audit or recover unpreserved upstream provenance; the separate reader-download route is described below. Exact coverage and output locations are in the [reproduction guide](docs/reproduction.md).
 
 ## Lightweight installation
 
@@ -117,11 +119,32 @@ Three specialized tools remain available for narrower retained analyses:
 
 Their commands and schemas are documented in [fixed-prediction evaluation](docs/evaluation.md), [identity sensitivity](docs/identity_sensitivity.md), and [representation audit](docs/representation_audit.md).
 
+## Run the PROTAC-DB source-overlap audit locally
+
+Each reader must open the official [PROTAC-DB downloads page](https://cadd.zju.edu.cn/protacdb/downloads), review and accept the provider's terms, and download the PROTAC XLSX to a private path outside this repository. The repository does not download the workbook, accept terms on the reader's behalf, or redistribute the workbook or row-level derivatives.
+
+In a separate conversion environment, verify and convert the workbook:
+
+~~~bash
+python -m pip install -r environment/protacdb-requirements.txt
+python scripts/prepare_protacdb.py --input-xlsx <downloaded-protac.xlsx> --output-dir <private-protacdb-dir>
+~~~
+
+The preparation command stops unless the XLSX matches the fixed study version. It checks the fixed byte count and SHA-256 before requiring the 15,502-row by 89-column conversion and fixed CSV hash.
+
+After running the cached TACK reproduction, use the model-fitting environment to reconstruct the overlap exclusion and rescore predictions:
+
+~~~bash
+python scripts/audit_source_overlap.py --construction-dir <reproduction-output>/construction --protacdb-csv <private-protacdb-dir>/protac.csv --predictions <reproduction-output>/frozen/primary_predictions.csv --output-dir <private-audit-dir>
+~~~
+
+The audit enforces the fixed 874-pair census and the 589 retained / 285 excluded split. Keep its row-level outputs private unless the provider grants redistribution permission. The official download endpoint is unversioned, and there is no project-controlled long-term archive of the workbook, so every reader download must pass the fixed checksum rather than being assumed equivalent. See [data access and provenance](docs/data_access.md) for the metadata check and remaining provenance limits.
+
 ## Data and reproduction boundary
 
 The study used a locally frozen 4,184-row TACK DC50 snapshot. A currently accessible fixed revision was later verified to match the retained bytes. That fixed commit is a recovery anchor; it does not identify the unknown revision or authoritative retrieval time of the original download, nor does it recover upstream row-level provenance.
 
-Source structures and activities are not copied into Git. The download and construction scripts obtain them from the fixed source and build the model inputs locally. The checked-in prediction caches contain author-generated predictions, identifiers and split annotations; `prepare_frozen_predictions.py` reconstructs their targets from the downloaded records. Historical nonself-overlap source anchors are a separate, unresolved access boundary.
+Source structures and activities are not copied into Git. The download and construction scripts obtain them from the fixed source and build the model inputs locally. The checked-in prediction caches contain author-generated predictions, identifiers and split annotations; `prepare_frozen_predictions.py` reconstructs their targets from the downloaded records. The source-overlap diagnostic follows the separate PROTAC-DB reader-download and local-generation route above; no source workbook or row-level derivative is distributed here.
 
 See [data access and provenance](docs/data_access.md) for the fixed source revision and omitted-input boundary.
 

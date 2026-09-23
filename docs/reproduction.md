@@ -5,7 +5,7 @@ The repository supports two routes through the TACK-based analyses. Both start w
 - **Cached:** attach reconstructed targets to the released historical predictions and recompute the reported summaries.
 - **Refit:** rerun the 200 primary and 375 supplemental fits with the recorded recipes, then compute the same summaries.
 
-Neither unified route reconstructs the historical PROTAC-DB nonself-overlap anchors, manual source adjudications, or unpreserved upstream provenance. A separate [conditional local audit](data_access.md#historical-source-diagnostics) accepts a user-obtained fixed workbook; source access remains unresolved. The reported post hoc 50,000-component extension and bounded full-graph chemical mapping are included in both unified routes. The extension checks its first 2,000 multiplicity vectors against the saved plan; it does not recover the original draw order or probability law.
+Neither unified route runs the historical PROTAC-DB nonself-overlap diagnostic, recreates manual source adjudications, or recovers unpreserved upstream provenance. A separate [local audit](data_access.md#historical-source-diagnostics) verifies a workbook that the reader downloads from the official PROTAC-DB page under the provider's terms, reconstructs the fixed overlap exclusion, and rescores predictions locally. The official endpoint is unversioned, so a download must match the fixed study checksum. The reported post hoc 50,000-component extension and bounded full-graph chemical mapping are included in both unified routes. The extension checks its first 2,000 multiplicity vectors against the saved plan; it does not recover the original draw order or probability law.
 
 ## Environment and command
 
@@ -71,7 +71,7 @@ Exact schemas and aggregation order are in [input contracts](input_contracts.md)
 
 On 23 September 2026, a fresh download of the fixed TACK file reproduced the retained construction outputs. The 200 primary and 375 supplemental fitting recipes were checked in the recorded Python 3.11 environment; the resulting predictions matched the retained predictions within absolute tolerance 1e-12. All 36 contrast estimates and interval endpoints, the component-extension prefixes and its MCSE also matched within that tolerance. The 16-pair structure audit recovered the stated 8/6/2 chemical categories.
 
-This was a check in the existing recorded environment, not a fresh dependency installation or a cross-platform test. The cached driver ran construction and numerical stages; the subsequently added extension and structure stages and the corrected refit outputs were checked separately. The final integrated refit command was not rerun as a second complete job. Historical PROTAC-DB access is not validated by these checks.
+This was a check in the existing recorded environment, not a fresh dependency installation or a cross-platform test. The cached driver ran construction and numerical stages; the subsequently added extension and structure stages and the corrected refit outputs were checked separately. The final integrated refit command was not rerun as a second complete job. These TACK checks did not download or byte-verify the current PROTAC-DB response body and did not run the separate local source-overlap audit.
 
 ## Optional synthetic check
 

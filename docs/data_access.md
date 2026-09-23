@@ -16,21 +16,30 @@ Long identifiers in these files bind rows, groups and components across the comp
 
 ## Historical source diagnostics
 
-The reported nonself-overlap diagnostic used three additional local anchors: a 15,502-row PROTAC-DB-derived table, a 1,429-row external-record derivative and a 17-row Wurz-family structure ledger. All three molecular-graph anchors derive from PROTAC-DB. They are not included, and the TACK-based commands do not substitute TACK for these nonself anchors.
+The reported nonself-overlap diagnostic used three additional local anchors: a 15,502-row PROTAC-DB-derived table, a 1,429-row external-record derivative and a 17-row Wurz-family structure ledger. All three molecular-graph anchors derive from PROTAC-DB. They are not included, and the unified TACK-based commands do not substitute TACK for these nonself anchors.
 
-On 23 September 2026, the file length and ETag at the official [PROTAC-DB download endpoint](https://cadd.zju.edu.cn/protacdb/downloads) matched the retained workbook's length and SHA-512. This was a header check, not a fresh download and byte comparison. The endpoint is not versioned. The provider requires acceptance of its access agreement and restricts redistribution of both raw and derivative data. A matching manual download may therefore be obtainable now, but a durable fixed-version link or permission to archive the snapshot remains to be secured. No agreement is accepted on the reader's behalf.
+The reader acquisition route is the official [PROTAC-DB downloads page](https://cadd.zju.edu.cn/protacdb/downloads). Each reader must review and accept the provider's terms personally, download the PROTAC XLSX to a private path outside this repository, and keep both the workbook and row-level derivatives local. The repository scripts perform no network request and accept no agreement. They provide fixed-version validation, conversion, overlap reconstruction and rescoring without distributing a mirror.
 
-This is a remaining reproducibility boundary for that source-overlap diagnostic. Publishing the model code does not close it. The missing original draw-order/probability-vector records and upstream retrieval history are separate provenance limits; no script fabricates them.
+On 23 September 2026, a fresh HEAD request to the download endpoint returned status 200; its `Content-Length` of 6,268,531 bytes and ETag matched the retained workbook's length and SHA-512. This was a metadata check only: the response body was not downloaded or byte-verified. The endpoint is unversioned and may change, so every reader's workbook must pass the study-version SHA-256 check below. There is no project-controlled durable archive of the fixed workbook.
 
-If you independently obtain the matching workbook under the provider's terms, `scripts/prepare_protacdb.py --input-xlsx <file> --output-dir <local-directory>` verifies its fixed hash and converts it locally. It neither downloads the file nor accepts an agreement. The workbook and generated CSV must stay outside the repository. The conversion was checked with Python 3.12.14, pandas 3.0.1 and openpyxl 3.1.5; optional conversion dependencies are in [environment/protacdb-requirements.txt](../environment/protacdb-requirements.txt). A different snapshot is rejected rather than silently substituted.
+This reader-download route does not require the project to mirror or archive PROTAC-DB. Permission would still be required before redistributing the workbook or its row-level derivatives. Exact future availability remains dependent on the unversioned provider endpoint. The missing original draw-order/probability-vector records and upstream retrieval history are separate provenance limits; no script fabricates them.
 
-Using the model-fitting environment, the conditional local audit is:
+After downloading, use a separate conversion environment to verify and convert the workbook:
 
 ~~~bash
-python scripts/audit_source_overlap.py --construction-dir <construction> --protacdb-csv <local-protac.csv> --predictions <primary-predictions.csv> --output-dir <local-audit>
+python -m pip install -r environment/protacdb-requirements.txt
+python scripts/prepare_protacdb.py --input-xlsx <downloaded-protac.xlsx> --output-dir <private-protacdb-dir>
 ~~~
 
-It rebuilds the PROTAC-DB structure-overlap membership and rescores the retained 589-pair subset. With the author's retained workbook, all 874 keep/exclude decisions matched the original nonself union. The external and Wurz anchors added no pair outside that union, but this script does not recreate their separate labels, DOI matches or manual adjudications. This local verification does not establish access for another reader. Its row-level output must also remain local unless the provider grants redistribution permission.
+`prepare_protacdb.py` requires the fixed workbook length of 6,268,531 bytes and SHA-256 `4E3A7ECC74A24E26877D319B18937E2A81161A43B4BD1A2C6A1C2BAE0FCB263D`. It then applies the retained first-worksheet conversion and requires 15,502 rows, 89 columns and the fixed output CSV hash. A different or drifted snapshot is rejected rather than silently substituted. The conversion was checked with Python 3.12.14, pandas 3.0.1 and openpyxl 3.1.5.
+
+After completing the cached TACK reproduction, use the model-fitting environment for the local source-overlap audit:
+
+~~~bash
+python scripts/audit_source_overlap.py --construction-dir <reproduction-output>/construction --protacdb-csv <private-protacdb-dir>/protac.csv --predictions <reproduction-output>/frozen/primary_predictions.csv --output-dir <private-audit-dir>
+~~~
+
+It rebuilds the PROTAC-DB structure-overlap membership, enforces the fixed 874-pair census and 589 retained / 285 excluded split, and rescores predictions. With the author's retained workbook, all 874 keep/exclude decisions matched the original nonself union. The external and Wurz anchors added no pair outside that union, but this script does not recreate their separate labels, DOI matches or manual adjudications. Each reader must complete the download and checksum validation independently. Row-level audit output must remain local unless the provider grants redistribution permission.
 
 ## Figures
 
