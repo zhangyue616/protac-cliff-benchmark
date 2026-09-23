@@ -18,6 +18,7 @@ secrets*
 
 /data/
 /private_inputs/
+/demo_output/
 /local-results/
 /local_outputs/
 /outputs/

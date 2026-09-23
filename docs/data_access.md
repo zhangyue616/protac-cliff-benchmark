@@ -1,33 +1,40 @@
-# Data access
+# Data access and provenance
 
-This repository intentionally contains code and aggregate numerical results, not the structure-containing or row-level study inputs.
+This repository distributes code, aggregate result tables, and manuscript figures. It does not distribute the row-level scientific inputs used for the reported analyses.
 
-## Inputs that are not distributed here
+## Source snapshot
 
-The analyses require some or all of the following local tables:
+The study started from a locally frozen 4,184-row TACK DC50 table. During manuscript preparation, the retained bytes were matched to this fixed Hugging Face revision:
 
-- fixed out-of-fold prediction streams;
-- primary pair and split-membership maps;
-- record-to-identity and recorded-assay-token mappings;
-- the compatible-pair table used by the representation audit;
-- canonical-isomeric SMILES for the selected endpoint records;
-- optional target mappings and the pre-existing target multiplicity plan.
+[Fixed TACK DC50 snapshot](https://huggingface.co/datasets/ailab-bio/TACK/resolve/0ebfb3627cfeee826c3392586d46940402237b11/DC50/train-00000-of-00001.parquet)
 
-These inputs can contain structures, source-derived fields, pair and record identifiers, identity hashes, assay-text hashes, or detailed memberships. They have not been cleared for unrestricted redistribution. The locally used TACK-derived snapshot also lacks a preserved upstream tag or commit and authoritative retrieval time, so this repository does not present it as a uniquely recoverable public source snapshot.
+That fixed revision is a recoverable byte-matching anchor. It does not recover the unknown revision or authoritative retrieval time of the original download, and it does not reconstruct upstream row-level curation, patent or table-copy lineage, or source-database snapshots that preceded the frozen input.
 
-## What is available
+## Inputs omitted from this repository
 
-The [`results/`](../results/) directory contains aggregate projections sufficient to inspect the reported numerical conclusions. The scripts document the exact columns required to recompute their respective outputs from authorized local inputs. No script downloads or fabricates missing data.
+The real-data recomputation commands require one or more authorized local tables containing analysis-ready rows. Depending on the command, these may include:
 
-Use directories outside the repository for restricted inputs and generated outputs, for example:
+- fixed out-of-fold predictions and true signed pDC50 differences;
+- pair, comparison-group, component, split, fold, model, model-seed, and representation labels;
+- retained component-resampling values or multiplicities;
+- record-to-identity, target, and recorded-assay mappings;
+- molecular structures or canonical-isomeric SMILES.
+
+The exact columns accepted by each public command are listed in [input contracts](input_contracts.md). No script downloads, reconstructs, or fabricates a missing scientific input.
+
+These omitted files can contain structures, source-derived fields, stable identifiers, membership information, or hashes that remain subject to source-specific rights. If access is granted separately, keep inputs and generated real-data outputs outside the Git worktree, for example:
 
 ```text
 ../private_inputs/
 ../local-results/
 ```
 
-The relative names are conventions only; no example data are bundled. If access is granted separately, the recipient remains responsible for following the terms of the original data sources and any conditions attached to the supplied derivative files.
+The repository's synthetic demo uses generated toy rows and does not require these inputs. Its output is not a substitute for the omitted study data.
 
-## Reproduction boundary
+## Figure boundary
 
-Code availability and aggregate-result availability do not by themselves provide complete third-party reproduction. That would additionally require authorized input delivery, source-specific redistribution clearance, a matched runtime, and a fresh-environment run. None of those broader conditions is implied by this private repository.
+Figures 1–5 and Figure S1 are included as manuscript-level assets. Figure 6 is omitted because it contains molecular structures and record identifiers whose redistribution status has not been cleared. The omission does not change the aggregate numerical results in [`../results/`](../results/).
+
+## What the repository can establish
+
+The checked-in aggregate tables permit inspection of the reported numerical conclusions. With separately authorized analysis-ready inputs, the included commands can recompute the documented aggregate summaries. Complete third-party reproduction would additionally require the omitted inputs, source-specific redistribution clearance, the original data-construction and model-fitting workflow, matched environments, and a fresh end-to-end run.

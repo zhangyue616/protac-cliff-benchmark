@@ -1,19 +1,31 @@
 # Aggregate results
 
-These files are reader-facing projections of the accepted local analysis outputs. They contain aggregate numbers only; no structures, SMILES, pair IDs, record IDs, source paths, credentials, or internal audit logs are included.
+These files are reader-facing projections of the accepted local analysis outputs. They contain aggregate numbers only: no molecular structures, SMILES, pair or record identifiers, source paths, credentials, or internal review logs are included.
 
 | File | Contents |
 | --- | --- |
-| `primary_contrasts.csv` | Six XGBoost-versus-random-forest contrasts from the primary 77-component, B = 2,000 bootstrap. |
-| `target_sensitivity_contrasts.csv` | The same six point estimands with intervals from the post hoc 17-supported-target, B = 50,000 sensitivity. |
-| `identity_metrics.csv` | Thirty-two descriptive rows: four fixed-OOF subsets by eight model/control identities. |
-| `identity_support.csv` | Overall support counts for the four fixed-OOF subsets. |
-| `representation_summary.json` | Aggregate support, parameters, and outcomes for the 16-pair-row representation audit. |
+| [primary_contrasts.csv](primary_contrasts.csv) | Six XGBoost-versus-random-forest contrasts from the primary 77-component, B = 2,000 analysis. |
+| [target_sensitivity_contrasts.csv](target_sensitivity_contrasts.csv) | The same six point estimands with intervals from the post hoc 17-supported-target, B = 50,000 sensitivity. |
+| [identity_metrics.csv](identity_metrics.csv) | Thirty-two descriptive rows: four frozen-OOF subsets by eight model or control identities. |
+| [identity_support.csv](identity_support.csv) | Aggregate support for the four frozen-OOF subsets. |
+| [representation_summary.json](representation_summary.json) | Support, parameters, and outcomes for the 16 binary-fingerprint-equal pair records. |
+| [supplemental_contrasts.csv](supplemental_contrasts.csv) | Six E1 identity-disjoint contrasts and 18 E2 folded-count-versus-binary contrasts. |
+| [supplemental_descriptive_metrics.csv](supplemental_descriptive_metrics.csv) | Descriptive E1 and E2 metrics under pair and equal-group weighting. |
 
-For both contrast tables, positive values favor XGBoost: direction accuracy uses XGBoost minus random forest, while MAE and RMSE use random forest minus XGBoost. The bounds are multiplicity-adjusted over the six-row family. In the primary component specification, only the two MAE intervals have positive lower bounds. In the target sensitivity, all six intervals include zero. The target sensitivity changes the resampling unit, sampling universe, and replicate count together, so the different interval conclusions cannot be attributed to target clustering alone.
+## Direction and interval interpretation
 
-The identity metrics pool retained prediction rows within each model. Random forest and XGBoost each have three saved streams, while the other model/control identities have one; metrics are not first averaged per seed. Subset changes are descriptive because support and POI composition change. They do not isolate effects of identity recurrence or recorded-assay completeness.
+In the primary and target-sensitivity tables, positive values favor XGBoost: direction accuracy is XGBoost minus random forest, while MAE and RMSE are random forest minus XGBoost. Only the two primary MAE intervals have positive lower bounds. All six target-sensitivity intervals include zero. The target analysis changes the resampling unit, sampling universe, and replicate count together, so the interval change cannot be attributed to target clustering alone.
 
-The representation diagnoses are hierarchical. `FOLDING_SUPPORTED` means the non-chiral sparse feature-ID supports differ despite equal 2,048-bit binary fingerprints. `MULTIPLICITY_LOSS_SUPPORTED` means those supports are equal but counts differ. `CHIRALITY_AWARE_ONLY_SEPARATION` means the non-chiral counts are equal and the chirality-aware counts differ. Sparse feature IDs remain hashed, and separation does not demonstrate predictive benefit or causality.
+In E1, positive values again favor XGBoost. Direction accuracy is XGBoost minus random forest; MAE and RMSE are random forest minus XGBoost. All six adjusted intervals include zero.
 
-The scripts can regenerate selected aggregates only when the required, separately authorized inputs are available. See [`../docs/reproduction.md`](../docs/reproduction.md) and [`../docs/data_access.md`](../docs/data_access.md).
+In E2, positive values favor folded counts. Direction accuracy is count minus binary; MAE and RMSE are binary minus count. All 18 adjusted intervals include zero. All six XGBoost point estimates across three metrics and two weighting schemes are negative, while the other model and metric combinations are mixed. These results do not establish equivalence or a universal representation ranking.
+
+The checked-in intervals are multiplicity-adjusted percentile summaries with uncalibrated coverage. Replicate draws, split copies, and model-seed rows are not independent observations.
+
+## Descriptive subsets and representation audit
+
+The frozen-OOF identity table pools retained prediction rows within each model. Random forest and XGBoost have three saved streams; the other model or control identities have one. Subset changes are descriptive because support and POI composition change, and the predictions were not refit.
+
+The representation diagnoses are hierarchical. FOLDING_SUPPORTED means non-chiral sparse feature-ID supports differ despite equal 2,048-bit binary fingerprints. MULTIPLICITY_LOSS_SUPPORTED means those supports are equal but counts differ. CHIRALITY_AWARE_ONLY_SEPARATION means non-chiral counts are equal and chirality-aware counts differ. Sparse feature IDs remain hashed, and separation does not demonstrate predictive benefit or causality.
+
+See the [reproduction guide](../docs/reproduction.md) and [input contracts](../docs/input_contracts.md) for the computations that can be rerun from separately authorized analysis-ready inputs.

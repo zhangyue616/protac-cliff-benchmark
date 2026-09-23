@@ -1,78 +1,125 @@
 # Reproduction guide
 
-This repository separates three questions that require different evidence:
+The repository exposes four distinct levels of checking. They answer different questions and should not be described as interchangeable.
 
-1. Can a reader inspect the reported aggregate results? Yes; see [`../results/`](../results/).
-2. Can the included scripts recompute selected analyses when authorized local inputs are supplied? Yes, within the contracts documented below.
-3. Does this repository alone provide complete third-party reproduction of the study? No. The required prediction, membership, mapping, structure, and resampling-plan inputs are not distributed here, and no fresh-environment reproduction has been completed.
+| Level | Runnable from this repository alone? | What it checks |
+| --- | --- | --- |
+| Inspect checked-in results and figures | Yes | The reported aggregate values, directions, support summaries, and manuscript visual assets. |
+| Run the synthetic demo | Yes | Local dependencies and shared aggregation, weighting, RMSE, and pairing code on deterministic toy data. |
+| Recompute from study inputs | Only with separately authorized inputs | The documented aggregate summaries from analysis-ready frozen predictions or resampling rows. |
+| Reproduce the study end to end | No | Dataset construction, pair selection, graph-constrained folds, model fitting, prediction generation, retained draw generation, and all source-level provenance. |
 
-All commands below are run from the repository root and keep inputs and generated outputs outside the Git worktree.
+## Environment
 
-## Environments
+Use Python 3.11 or newer. Create an isolated environment from the repository root. On Windows PowerShell:
 
-The base numerical environment used for the verified identity-sensitivity run was Python 3.12.14, NumPy 2.3.5, and pandas 3.0.1. Install the pinned Python packages into an isolated environment with:
+~~~bash
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+~~~
 
-```bash
-python -m pip install -r requirements.txt
-```
+On POSIX shells:
 
-The representation audit has a separate matched environment: Python 3.11.15 with RDKit 2026.03.3. In an appropriate Python 3.11 environment, install:
+~~~bash
+python3.11 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+~~~
 
-```bash
+The public aggregate commands use the lightweight NumPy/pandas environment in requirements.txt. The manuscript's original model-fitting and RDKit structure-analysis environments are separate historical environments; they are not recreated by this installation.
+
+In the commands below, `python` means the interpreter inside that environment: `.\.venv\Scripts\python.exe` on Windows or `.venv/bin/python` on POSIX.
+
+## Offline synthetic demo
+
+~~~bash
+python scripts/run_synthetic_demo.py --output-dir demo_output
+~~~
+
+The command creates deterministic toy inputs, calls the shared aggregation and pairing functions directly, and writes its outputs beneath demo_output. It does not execute the three fixed-study CLIs, access the network, or read any omitted study file.
+
+A passing demo supports only the shared software path it exercises. It does not validate the fixed-study input contracts. The generated rows are synthetic, the support is intentionally small, and the output values are not expected to match any checked-in scientific result.
+
+## Primary component summary
+
+~~~bash
+python scripts/recompute_primary_component_metrics.py --predictions <csv> --draw-plan <npz-or-csv> --output-dir <dir>
+~~~
+
+This command recomputes the six primary contrast estimates and multiplicity-adjusted interval bounds from a supplied analysis-ready prediction CSV and saved draw plan. It does not generate the 77-component plan, reconstruct missing ordered draws, infer the original probability law, or establish that the primary plan was fixed before results were inspected.
+
+The scientific primary analysis used B = 2,000 resamples of all 77 components, including 37 components without primary-pair support. The six contrasts share synchronous weights and form one Bonferroni family. See [analysis definitions](analysis_definitions.md) and [input contracts](input_contracts.md).
+
+## Supplemental E1: global identity-disjoint analysis
+
+~~~bash
+python scripts/run_supplemental_e1.py --predictions <csv> --draw-plan <npz-or-csv> --output-dir <dir>
+~~~
+
+The command aggregates supplied E1 prediction rows and recomputes the descriptive metrics and six XGBoost-versus-random-forest contrasts. It does not rebuild the identity-disjoint graph, assign folds, fit the 200 models, or generate predictions.
+
+The reported E1 analysis contains 874 pairs across five split seeds. Its 55-component resampling container includes 29 supported and 26 primary-empty components. All six checked-in adjusted intervals include zero.
+
+## Supplemental E2: folded count versus binary
+
+~~~bash
+python scripts/run_supplemental_e2.py --count-predictions <csv> --binary-predictions <csv> --draw-plan <npz-or-csv> --output-dir <dir>
+~~~
+
+The command aggregates supplied binary and folded-count prediction rows and recomputes descriptive metrics and the 18 representation contrasts. It does not calculate fingerprints from structures, fit the 175 models, or regenerate predictions.
+
+The reported E2 analysis retains the original 874 pairs and folds and resamples the 77-component container for B = 50,000 replicates. All 18 checked-in adjusted intervals include zero.
+
+## Additional bounded analyses
+
+The repository retains three specialized commands alongside the main rescoring path.
+
+### Fixed-prediction point metrics and target-plan replay
+
+~~~bash
+python scripts/evaluate_predictions.py --predictions <csv> --output-dir <dir>
+~~~
+
+This command calculates fixed-prediction point metrics and XGBoost-versus-random-forest contrasts. With a pair-target map, key-target map, and saved 50,000 × 17 target-multiplicity plan, it can also replay the post hoc supported-target intervals. It does not fit a model or reproduce the primary 77-component plan. See [fixed-prediction evaluation](evaluation.md).
+
+### Frozen-prediction identity and assay subsets
+
+~~~bash
+python scripts/identity_sensitivity.py --predictions <csv> --membership <csv> --pair-map <csv> --records <csv> --output-dir <dir>
+~~~
+
+This command filters frozen predictions into four descriptive subsets. It neither refits models nor changes folds, and subset differences do not isolate a causal identity or assay effect. See [identity sensitivity](identity_sensitivity.md).
+
+### Bounded representation audit
+
+Install the matched RDKit dependency in a Python 3.11 environment:
+
+~~~bash
 python -m pip install -r requirements-rdkit.txt
-```
+~~~
 
-These commands describe dependencies; this repository has not been validated by creating and testing a new environment from scratch.
+Then run:
 
-## Fixed-prediction evaluation
+~~~bash
+python scripts/representation_audit.py --pairs <csv> --records <csv> --primary-pair-map <csv> --output-dir <dir>
+~~~
 
-[`scripts/evaluate_predictions.py`](../scripts/evaluate_predictions.py) recomputes point metrics and XGBoost-versus-random-forest contrasts from fixed saved predictions:
+This command regenerates binary and sparse Morgan representations for the fixed 16-pair audit from authorized structures. It performs no fit, prediction, or bootstrap and does not test predictive benefit. See [representation audit](representation_audit.md).
 
-```bash
-python scripts/evaluate_predictions.py --predictions ../private_inputs/predictions.csv --output-dir ../local-results/evaluation
-```
+## Inputs and outputs
 
-The default outputs are `seed_model_metrics.csv` (36 rows), `seed_contrasts.csv` (18 rows), and `mean_contrasts.csv` (6 rows). This path does not train models, generate predictions, construct splits, generate a resampling plan, or reproduce the primary B = 2,000 by 77-component bootstrap intervals.
+The three main fixed-study rescoring commands validate the conditions listed for their actual implementations; their accepted columns, fixed sets, row identities, output files, and ordering are documented in [input contracts](input_contracts.md). The three additional tools have their own narrower contracts in [fixed-prediction evaluation](evaluation.md), [identity sensitivity](identity_sensitivity.md), and [representation audit](representation_audit.md). Do not interpret a partial output from a command that exits with an error.
 
-An optional branch can apply an already-existing 50,000 by 17 `uint16` target-multiplicity plan. All three optional inputs must be supplied together:
+Keep restricted inputs and generated outputs outside the repository, for example:
 
-```bash
-python scripts/evaluate_predictions.py --predictions ../private_inputs/predictions.csv --output-dir ../local-results/evaluation-target --pair-target-map ../private_inputs/pair_target_map.csv --key-target-map ../private_inputs/key_target_map.csv --target-multiplicities ../private_inputs/target_multiplicities.npy
-```
+~~~text
+../private_inputs/
+../local-results/
+~~~
 
-That branch adds `target_plan_intervals.csv` with six rows. It replays the supplied plan; it does not create random draws. See [`evaluation.md`](evaluation.md) for the required columns, weighting, contrast signs, and plan contract.
+No command downloads or fabricates a missing study input.
 
-## Fixed-OOF identity and recorded-assay sensitivity
+## Result comparison
 
-[`scripts/identity_sensitivity.py`](../scripts/identity_sensitivity.py) filters frozen OOF predictions into four descriptive subsets without refitting:
+For a real-data verification, compare the generated aggregate CSVs with the corresponding checked-in tables in [results](../results/). Match rows by their semantic keys before comparing numerical fields; file order alone is not a scientific identity check.
 
-```bash
-python scripts/identity_sensitivity.py --predictions ../private_inputs/predictions.csv --membership ../private_inputs/primary_split_membership.csv --pair-map ../private_inputs/primary_pair_map.csv --records ../private_inputs/records.csv --output-dir ../local-results/identity
-```
-
-The default outputs are aggregate `metrics.csv`, `support.csv`, and `RUN_METADATA.json`. The optional `--write-membership` flag emits a row-level file with restricted identifiers and hashes; keep it outside the repository. See [`identity_sensitivity.md`](identity_sensitivity.md) for schemas and fixed-study checks.
-
-This is the one analysis path executed during initial repository assembly. In the recorded Python 3.12.14 / NumPy 2.3.5 / pandas 3.0.1 environment, the run completed with 4,370 OOF membership rows and 52,440 saved-prediction rows. Its 32 model-by-subset rows contained 96 metric values identical to the frozen accepted aggregate CSV, and the four subsets' 24 retained support counts also matched exactly. No row-level membership output was requested, and all run outputs remained outside the repository.
-
-## Representation audit
-
-[`scripts/representation_audit.py`](../scripts/representation_audit.py) regenerates the fixed binary and sparse Morgan representations from authorized local structure data:
-
-```bash
-python scripts/representation_audit.py --pairs ../private_inputs/pairs.csv --records ../private_inputs/records.csv --primary-pair-map ../private_inputs/primary_pair_map.csv --output-dir ../local-results/representation_audit
-```
-
-It writes aggregate JSON and CSV only. See [`representation_audit.md`](representation_audit.md) for the three minimal input schemas and interpretation limits.
-
-## Initial verification status
-
-| Path | Verification during repository assembly |
-| --- | --- |
-| Identity/recorded-assay sensitivity | One representative scientific run passed and exactly matched the frozen aggregate metrics and support described above. |
-| Fixed-prediction point metrics and contrasts | Source review and Python syntax validation only; no scientific run in this assembly. |
-| Optional target-plan replay | Source review and Python syntax validation only; no replay in this assembly. |
-| Representation audit | Source review and Python syntax validation only; no scientific run in this assembly. |
-| Primary component-bootstrap intervals | Aggregate results included; the original B = 2,000 by 77-component bootstrap implementation is outside this repository. |
-| Fresh-environment reproduction | Not performed. |
-
-The first row validates a bounded code path against frozen aggregates. It does not supply the omitted inputs, validate a new installation, reproduce training, or close the complete-reproduction gap.
+The checked-in primary, target-sensitivity, fixed-OOF subset, representation-audit, E1, and E2 tables come from accepted local analysis outputs. A matching aggregate recomputation validates the supplied analysis-ready inputs and aggregation path. It does not validate earlier data construction, model fitting, source provenance, redistribution rights, or a fresh end-to-end installation.
