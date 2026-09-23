@@ -1,9 +1,11 @@
-# Licensing status
+# Licensing and source terms
 
-No repository-wide software license has been selected. The absence of a license does not grant permission to copy, modify, redistribute, or reuse the code or bundled assets.
+The authors selected the [MIT License](../LICENSE) for the author-written code and its accompanying software documentation on 23 September 2026. This covers the reconstruction, model-fitting, statistical-analysis and verification code in this repository.
 
-Third-party datasets, publications, software, and database-derived material remain subject to their own terms. This repository does not grant rights to omitted TACK-derived row-level inputs, molecular structures, SMILES, source mappings, or PROTAC-DB-derived material.
+The repository also supplies author-generated predictions, split identifiers, resampling multiplicities and aggregate results so that readers can examine and recompute the reported analyses. These files contain no source SMILES or measured activities. Their identifiers bind rows across the analysis.
 
-Aggregate result tables and the included manuscript figures are provided for review of this project. Their presence does not clear the underlying inputs or source-derived material for redistribution. Figure 6 is excluded because its molecular structures and record identifiers have not been cleared for repository release.
+Third-party software, publications and data retain their own terms. In particular, the MIT software license does not grant new rights to TACK, PROTAC-DB or their upstream sources. The download script retrieves the fixed TACK snapshot directly from its public host; it does not mirror the source table in this repository. The dataset host's own metadata is not a substitute for upstream redistribution permission.
 
-There is no tagged software release, archived repository version, or publication DOI that serves as a definitive release. Any public release, archive deposit, or reuse license requires a separate author decision and source-by-source rights review.
+Historical PROTAC-DB-derived nonself anchors are not redistributed. Their access and reconstruction limits are described in [data access](data_access.md). This limitation is separate from the runnable TACK-based model comparisons and must not be described as resolved by publishing the code.
+
+Figures 1–5 and Figure S1 are manuscript assets supplied for inspection. Figure 6 is not redistributed here; its molecular structures can be inspected in the corresponding source records after local reconstruction.

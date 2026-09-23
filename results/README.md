@@ -11,6 +11,8 @@ These files are reader-facing projections of the accepted local analysis outputs
 | [representation_summary.json](representation_summary.json) | Support, parameters, and outcomes for the 16 binary-fingerprint-equal pair records. |
 | [supplemental_contrasts.csv](supplemental_contrasts.csv) | Six E1 identity-disjoint contrasts and 18 E2 folded-count-versus-binary contrasts. |
 | [supplemental_descriptive_metrics.csv](supplemental_descriptive_metrics.csv) | Descriptive E1 and E2 metrics under pair and equal-group weighting. |
+| [component_extension_prefixes.csv](component_extension_prefixes.csv) | Corrected 20k/30k/40k/50k prefix intervals for the post hoc component extension. |
+| [component_extension_mcse.csv](component_extension_mcse.csv) | Ten-batch lower-endpoint MCSE for that extension. |
 
 ## Direction and interval interpretation
 
@@ -28,4 +30,4 @@ The frozen-OOF identity table pools retained prediction rows within each model. 
 
 The representation diagnoses are hierarchical. FOLDING_SUPPORTED means non-chiral sparse feature-ID supports differ despite equal 2,048-bit binary fingerprints. MULTIPLICITY_LOSS_SUPPORTED means those supports are equal but counts differ. CHIRALITY_AWARE_ONLY_SEPARATION means non-chiral counts are equal and chirality-aware counts differ. Sparse feature IDs remain hashed, and separation does not demonstrate predictive benefit or causality.
 
-See the [reproduction guide](../docs/reproduction.md) and [input contracts](../docs/input_contracts.md) for the computations that can be rerun from separately authorized analysis-ready inputs.
+See the [reproduction guide](../docs/reproduction.md) for reconstruction from the fixed public source and [input contracts](../docs/input_contracts.md) for individual statistical stages.

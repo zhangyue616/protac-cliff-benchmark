@@ -1,0 +1,4 @@
+# Optional local workbook conversion only; verified with Python 3.12.14.
+# Use a separate environment from the model-fitting recipe.
+pandas==3.0.1
+openpyxl==3.1.5

@@ -1,0 +1,7 @@
+comparison_id,metric,mcse_sd_over_sqrt10
+pair_id,direction_accuracy,0.0008722779590266986
+pair_id,delta_mae,0.0015458932059384
+pair_id,delta_rmse,0.00186528083079241
+equal_comparison_key,direction_accuracy,0.0009769914065678243
+equal_comparison_key,delta_mae,0.001659850375557309
+equal_comparison_key,delta_rmse,0.0018733266554303153

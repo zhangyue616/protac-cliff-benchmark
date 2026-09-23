@@ -1,6 +1,8 @@
 # Predicting signed pDC50 differences in PROTAC activity-cliff pairs: a retrospective comparison of machine-learning models
 
-This repository contains the runnable aggregate-analysis code, checked-in numerical results, and manuscript figures for a retrospective benchmark of signed pDC50 differences within **874 measured PROTAC activity-cliff pairs from 420 records**. The six-contrast family was fixed after early findings from the same data; its multiplicity-adjusted percentile intervals have uncalibrated coverage.
+This repository provides data-reconstruction, fixed-recipe model-fitting, and result-recomputation code for a retrospective comparison of signed pDC50 differences within **874 measured PROTAC activity-cliff pairs from 420 records**. It includes author-generated predictions and resampling plans, aggregate results, and manuscript figures. Molecular structures and measured activities are obtained from the fixed public source using the supplied download script.
+
+The six-contrast family was fixed after early findings from the same data; its multiplicity-adjusted percentile intervals have uncalibrated coverage. The [reproduction coverage](docs/reproduction.md) distinguishes the runnable TACK-based analyses from historical source diagnostics that still need additional materials.
 
 The task begins after both endpoint activities are known and a pair meets the operational cliff definition. It evaluates local signed-difference resolution; it does not evaluate prospective cliff discovery, compound ranking, target-held-out deployment, or mechanism prediction.
 
@@ -29,6 +31,9 @@ Full-precision values, support counts, and interpretation notes are in [results]
 
 | Path | Contents |
 | --- | --- |
+| [scripts/reproduce.py](scripts/reproduce.py) | Reconstructs the fixed data and runs the declared analyses, using cached predictions or refitting the 575 models. |
+| [scripts/fetch_source.py](scripts/fetch_source.py) | Downloads and verifies the fixed public TACK source. |
+| [reproduction](reproduction/) | Author predictions without source activities or structures, and saved resampling plans. |
 | [scripts/run_synthetic_demo.py](scripts/run_synthetic_demo.py) | Deterministic offline toy workflow for checking local dependencies and shared aggregation code. |
 | [scripts/recompute_primary_component_metrics.py](scripts/recompute_primary_component_metrics.py) | Rescores frozen primary predictions with the saved 2,000 × 77 component plan. |
 | [scripts/run_supplemental_e1.py](scripts/run_supplemental_e1.py) | Rescores frozen E1 identity-disjoint predictions with the saved 2,000 × 55 component plan. |
@@ -39,7 +44,26 @@ Full-precision values, support counts, and interpretation notes are in [results]
 
 Figure 6 is not included because it contains molecular structures and record identifiers whose redistribution status has not been cleared.
 
-## Install
+## Reproduce the reported comparisons
+
+Use Python 3.11 in a dedicated environment. The fitting and reconstruction dependencies are pinned separately from the lightweight rescoring dependencies:
+
+~~~bash
+python -m pip install -r environment/primary-requirements.txt
+python scripts/reproduce.py --mode cached --output-dir ../protac-reproduction-cached
+~~~
+
+This downloads the fixed TACK snapshot, reconstructs records, pairs, folds, fingerprints and targets, and recomputes the primary, E1, E2 and supported-target contrasts from the released predictions. It also runs the identity-recurrence, Morgan-representation and bounded structure audits, together with the reported post hoc component extension. The final check compares 36 contrast estimates and interval endpoints, extension prefixes and MCSE with the reported tables.
+
+To rerun the original 200 primary fits and the 375 supplemental fits before scoring:
+
+~~~bash
+python scripts/reproduce.py --mode refit --output-dir ../protac-reproduction-refit
+~~~
+
+Use a new output directory for each run. An existing fixed TACK download can be supplied with `--source-file <parquet>`. These commands do not reconstruct the historical PROTAC-DB nonself anchors or unpreserved upstream provenance. Exact coverage and output locations are in the [reproduction guide](docs/reproduction.md).
+
+## Lightweight installation
 
 Use Python 3.11 or newer in an isolated environment. On Windows PowerShell:
 
@@ -69,9 +93,9 @@ The demo generates deterministic toy inputs and exercises the shared aggregation
 
 **The demo is not a scientific reproduction.** It does not use the 874 study pairs, rebuild the dataset, construct the reported folds, train a model, recreate frozen predictions, or reproduce a manuscript result.
 
-## Recompute from authorized study inputs
+## Run an individual recomputation
 
-Keep restricted inputs and generated real-data outputs outside the Git worktree.
+The unified command prepares inputs automatically. Each statistical stage is also available separately:
 
 ~~~bash
 python scripts/recompute_primary_component_metrics.py --predictions <csv> --draw-plan <npz-or-csv> --output-dir <dir>
@@ -79,7 +103,7 @@ python scripts/run_supplemental_e1.py --predictions <csv> --draw-plan <npz-or-cs
 python scripts/run_supplemental_e2.py --count-predictions <csv> --binary-predictions <csv> --draw-plan <npz-or-csv> --output-dir <dir>
 ~~~
 
-These commands consume analysis-ready tables. They do not download source data, construct the 874-pair population, regenerate graph-constrained folds, fit models, or recreate omitted prediction streams. See [input contracts](docs/input_contracts.md) for required columns, fixed identifiers, aggregation order, and output schemas. See the [reproduction guide](docs/reproduction.md) for what each command does and does not verify.
+These individual commands consume analysis-ready tables; reconstruction and fitting are separate stages in `reproduce.py`. See [input contracts](docs/input_contracts.md) for required columns, aggregation order, and output schemas.
 
 ## Additional bounded analyses
 
@@ -97,10 +121,10 @@ Their commands and schemas are documented in [fixed-prediction evaluation](docs/
 
 The study used a locally frozen 4,184-row TACK DC50 snapshot. A currently accessible fixed revision was later verified to match the retained bytes. That fixed commit is a recovery anchor; it does not identify the unknown revision or authoritative retrieval time of the original download, nor does it recover upstream row-level provenance.
 
-The repository does not include the structures, row-level pair and record maps, split memberships, model-ready features, fitted estimators, complete prediction streams, or retained resampling inputs required for end-to-end third-party reproduction. The checked-in aggregate results remain inspectable, the synthetic path is runnable offline, and the real-data commands can recompute bounded summaries when separately authorized inputs are supplied. These are narrower claims than full study reproduction.
+Source structures and activities are not copied into Git. The download and construction scripts obtain them from the fixed source and build the model inputs locally. The checked-in prediction caches contain author-generated predictions, identifiers and split annotations; `prepare_frozen_predictions.py` reconstructs their targets from the downloaded records. Historical nonself-overlap source anchors are a separate, unresolved access boundary.
 
 See [data access and provenance](docs/data_access.md) for the fixed source revision and omitted-input boundary.
 
 ## License and release status
 
-No repository-wide software license has been selected. The repository has no tagged release, archive identifier, or publication DOI. Third-party and source-derived materials remain subject to their own terms; the presence of aggregate results or manuscript figures does not clear their underlying inputs for reuse. See [licensing status](docs/licensing.md).
+Author-written code is available under the [MIT License](LICENSE). Third-party data and dependencies retain their own terms; the software license does not relicense downloaded source data. There is no archived release DOI. See [licensing and source terms](docs/licensing.md).
